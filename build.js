@@ -123,13 +123,13 @@ var debugHtml = buildPage(function () {
             src: "../src/" + file
         });
     })
-}).asString();
+});
 
 var appHtml = buildPage(function () {
-    return collect(sourceFiles, function (file) {
-        return $('script', {type: "text/javascript"}).text(fs.readFileSync('src/' + file, 'utf8'));
-    })
-}).asString();
+    return $('script', {type: "text/javascript"}).text(collect(sourceFiles,function (file) {
+        return fs.readFileSync('src/' + file, 'utf8');
+    }).join('\n'));
+});
 
-fs.writeFileSync("debug/debug.html", debugHtml);
-fs.writeFileSync("build/app.html", appHtml);
+fs.writeFileSync("debug/debug.html", debugHtml.asString());
+fs.writeFileSync("build/app.html", appHtml.asString());
