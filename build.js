@@ -56,12 +56,12 @@ var $ = function (tag, attributes) {
         attributes: attributes,
         value: null,
         append: function () {
-            var items = arguments;
-            if (isArray(items[0])) {
-                items = items[0];
-            }
-            for (var i = 0; i < items.length; i++) {
-                this.children.push(items[i]);
+            for (var i = 0; i < arguments.length; i++) {
+                if (isArray(arguments[i])) {
+                    this.append.apply(this, arguments[i])
+                } else {
+                    this.children.push(arguments[i]);
+                }
             }
             return this;
         },
@@ -102,28 +102,34 @@ var sourceFiles = doWithDefault(function () {
     return fs.readdirSync('src');
 }, []);
 
-var debugHtml =
-    $('html').append(
+function buildPage(scriptFunc) {
+    return $('html').append(
         $('head').append(
-            collect(sourceFiles, function (file) {
-                return $('script', {
-                    type: "text/javascript",
-                    src: "../src/" + file
-                });
-            })
+            $('title').text(buildConfig.appTitle)
         ),
-        $('body')
-    ).asString();
+        $('body').append(
+            collect(buildConfig.dependencies, function (url) {
+                return $('script', {type: "text/javascript", src: url});
+            }),
+            scriptFunc()
+        )
+    )
+}
 
-var appHtml =
-    $('html').append(
-        $('head').append(
-            collect(sourceFiles, function (file) {
-                return $('script', {type: "text/javascript"}).text(fs.readFileSync('src/' + file, 'utf8'));
-            })
-        ),
-        $('body')
-    ).asString();
+var debugHtml = buildPage(function () {
+    return collect(sourceFiles, function (file) {
+        return $('script', {
+            type: "text/javascript",
+            src: "../src/" + file
+        });
+    })
+}).asString();
+
+var appHtml = buildPage(function () {
+    return collect(sourceFiles, function (file) {
+        return $('script', {type: "text/javascript"}).text(fs.readFileSync('src/' + file, 'utf8'));
+    })
+}).asString();
 
 fs.writeFileSync("debug/debug.html", debugHtml);
 fs.writeFileSync("build/app.html", appHtml);

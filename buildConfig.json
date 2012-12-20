@@ -1,3 +1,7 @@
 {
-
+    "appTitle": "User management for Rally Projects",
+    "dependencies": {
+        "jQuery": "https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js",
+        "underscore": "http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.2/underscore-min.js"
+    }
 }
