@@ -25,7 +25,7 @@ function doWithDefault(func, defaultValue) {
     }
 }
 
-var $ = function (tag, attributes) {
+function $(tag, attributes) {
     var tab = "    ";
 
     function indentString(level) {
